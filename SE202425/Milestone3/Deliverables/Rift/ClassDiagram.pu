@@ -1,0 +1,97 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+skinparam style strictuml
+
+class RiftCommand {
+  - name: String = "/rift"
+  - permissions: String = "worldedit.region.rift"
+  + rift(actor: Actor, editSession: EditSession, region: Region, 
+         thickness: double, height: double, 
+         waveAmplitude: double, waveFrequency: double, 
+         pattern: Pattern, up: boolean, down: boolean): int
+  - isValidRegion(region: Region, actor: Actor, message: String): boolean
+  - checkValidParameter(value: double, errorMessage: String): void
+  - getVertices(region: Region): List<BlockVector3>
+}
+
+class EditSession {
+  + drawValley(pattern: Pattern, vectors: List<BlockVector3>, 
+              radius: double, height: double,
+              waveAmplitude: double, waveFrequency: double, 
+              inv: boolean): int
+  - calculateIntermediatePoints(vectors: List<BlockVector3>, 
+                               transform: BiFunction): Set<BlockVector3>
+  - getEllipsoid(vset: Set<BlockVector3>, radius: double, 
+                 height: double, inverted: boolean): Set<BlockVector3>
+  - setBlocks(blocks: Set<BlockVector3>, pattern: Pattern): int
+}
+
+interface Region {
+}
+
+class CuboidRegion {
+  + getPos1(): BlockVector3
+  + getPos2(): BlockVector3
+}
+
+class ConvexPolyhedralRegion {
+  + getVertices(): Collection<BlockVector3>
+}
+
+class BlockVector3 {
+  + x(): int
+  + y(): int
+  + z(): int
+  + at(x: int, y: int, z: int): BlockVector3
+}
+
+interface Pattern {
+}
+
+class Actor {
+  + printInfo(message: Component): void
+  + printError(message: Component): void
+}
+
+interface WorldEditException {
+}
+
+class MaxChangedBlocksException {
+}
+
+' Inheritance relationships
+CuboidRegion ..|> Region
+ConvexPolyhedralRegion ..|> Region
+MaxChangedBlocksException ..|> WorldEditException
+
+' Associations
+RiftCommand ..> EditSession : uses
+RiftCommand ..> Region : validates
+RiftCommand ..> Actor : notifies
+RiftCommand ..> Pattern : applies
+RiftCommand ..> BlockVector3 : processes
+EditSession ..> BlockVector3 : manipulates
+EditSession ..> Pattern : applies
+
+' Dependencies
+RiftCommand ..> WorldEditException : throws
+EditSession ..> MaxChangedBlocksException : throws
+
+note right of RiftCommand
+  Default values:
+  thickness = 2
+  height = 25
+  waveAmplitude = 5
+  waveFrequency = 1
+  pattern = air
+end note
+
+note right of EditSession::drawValley
+  Generates a valley shape by:
+  1. Calculating wave points
+  2. Creating ellipsoid shape
+  3. Applying block pattern
+end note
+
+@enduml

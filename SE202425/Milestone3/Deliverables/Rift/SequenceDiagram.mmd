@@ -1,0 +1,29 @@
+sequenceDiagram
+    actor A as Actor
+    participant P as Permission System
+    participant R as Rift Command
+    participant Reg as Region
+    participant ES as EditSession
+
+
+    A->>+P: Type rift command
+    P->>+R: Check valid permission<br>(worldedit.region.rift)
+    R->>R: isValidRegion(region)
+    R->>R: checkValidParameter(thickness)
+    R->>R: checkValidParameter(height)
+    
+    R->>+Reg: getVertices()
+    Reg-->>-R: List<BlockVector3>
+    
+    alt up flag is true
+        R->>+ES: drawValley(pattern, vectors, params, false)
+        ES-->>-R: blocksChanged
+    end
+    
+    alt down flag is true
+        R->>+ES: drawValley(pattern, vectors, params, true)
+        ES-->>-R: blocksChanged
+    end
+    
+    R->>A: Print blocks changed info
+    R-->>-A: Return total blocks changed

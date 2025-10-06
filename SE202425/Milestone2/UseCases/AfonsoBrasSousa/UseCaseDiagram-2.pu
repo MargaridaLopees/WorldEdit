@@ -1,0 +1,48 @@
+@startuml WorldEdit Utility Commands Use Cases
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor Player as player
+actor "Permission Manager" as perm
+actor "Terrain Manager" as terrain
+actor "Entity Manager" as entity
+
+rectangle "WorldEdit Terrain & Entity Management" {
+  ' Terrain Manipulation Use Cases
+  usecase "Manipulate Terrain" as UC4
+  usecase "Fill Area" as UC4_1
+  usecase "Drain Liquid" as UC4_2
+  usecase "Fix Liquid" as UC4_3
+  usecase "Modify Surface" as UC4_4
+  usecase "Check Area Validity" as UC4_5
+  
+  ' Entity Management Use Cases
+  usecase "Manage Entities" as UC5
+  usecase "Remove Entities" as UC5_1
+  usecase "Butcher Mobs" as UC5_2
+  usecase "Filter Entity Types" as UC5_3
+  usecase "Check for Protected Entities" as UC5_4
+}
+
+' UC-004 relationships
+player --> UC4
+UC4 ..> UC4_1 : <<extend>>
+UC4 ..> UC4_2 : <<extend>>
+UC4 ..> UC4_3 : <<extend>>
+UC4 ..> UC4_4 : <<extend>>
+UC4 ..> UC4_5 : <<include>>
+UC4_5 -- terrain
+perm -- UC4
+
+' UC-005 relationships
+player --> UC5
+UC5 ..> UC5_1 : <<extend>>
+UC5 ..> UC5_2 : <<extend>>
+UC5 ..> UC5_3 : <<include>>
+UC5 ..> UC5_4 : <<include>>
+UC5_3 -- entity
+UC5_4 -- entity
+perm -- UC5
+
+@enduml

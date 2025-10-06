@@ -1,0 +1,89 @@
+@startuml
+
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+actor "Player" as player
+actor "Permission System" as perm
+actor "Command interpreter\n(RegionCommand)" as region
+actor "World Block handler\n(EditSession)" as edit
+
+rectangle "WorldEdit Rift Command" {
+  usecase "Create Rift\n//rift" as UC1
+  
+  usecase "Validate Region Type" as UC2
+  usecase "Check Parameters" as UC3
+  usecase "Get Region Vertices" as UC4
+  usecase "Draw Valley" as UC5
+  
+  usecase "Generate Wave Pattern" as UC6
+  usecase "Create Ellipsoid Shape" as UC7
+  usecase "Apply Block Pattern" as UC8
+  
+}
+
+' Main command flow
+player -- UC1
+perm -- UC1 : "worldedit.region.rift"
+
+' Validation and preparation
+UC1 ..> UC2 : <<include>>
+UC1 ..> UC3 : <<include>>
+UC1 ..> UC4 : <<include>>
+
+' Valley creation process
+UC5 -- edit
+UC1 ..> UC5 : <<include>>
+UC5 ..> UC6 : <<include>>
+UC5 ..> UC7 : <<include>>
+UC5 ..> UC8 : <<include>>
+
+' External system interactions
+region -- UC2
+region -- UC3
+region -- UC4
+
+note right of UC1
+  Parameters:
+  - thickness (def: 2)
+  - height (def: 25)
+  - waveAmplitude (def: 5)
+  - waveFrequency (def: 1)
+  - pattern (def: air)
+  Switches:
+  -u: upward rift
+  -d: downward rift
+  Default: both up & down
+end note
+
+note right of UC2
+  Valid region types:
+  - CuboidRegion
+  - ConvexPolyhedralRegion
+end note
+
+note right of UC3
+  Validations:
+  - thickness >= 0
+  - height >= 0
+end note
+
+note right of UC6
+  Wave Generation:
+  - Applies sinusoidal
+    deformation
+  - Uses amplitude and
+    frequency parameters
+end note
+
+note right of UC7
+  Ellipsoid Creation:
+  - Calculates points within
+    radius and height
+  - Handles both upward
+    and downward directions
+  - Fill it with chosen pattern
+end note
+
+@enduml

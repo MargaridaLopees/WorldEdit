@@ -1,0 +1,49 @@
+@startuml WorldEdit Schematics and Clipboard Commands Use Cases
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor Player as player
+actor "Permission Manager" as perm
+actor "Clipboard Manager" as clip
+actor "Online Server" as server
+
+rectangle WorldEdit {
+  usecase "Save Schematic Locally" as UC1
+  usecase "Copy Build to Clipboard" as UC1_1
+  usecase "Save to File" as UC1_2
+  
+  usecase "Share Schematic Online" as UC2
+  usecase "Upload to Server" as UC2_1
+  usecase "Generate and copy Share URL to Clipboard" as UC2_2
+  
+  usecase "Copy and Paste Build" as UC3
+  usecase "Paste from Clipboard" as UC3_1
+}
+
+' UC-001 relationships
+player --> UC1
+UC1 ..> UC1_1 : <<include>>
+UC1 ..> UC1_2 : <<include>>
+UC1_1 -- clip
+perm -- UC1
+
+' UC-002 relationships
+player --> UC2
+UC2 ..> UC1_1 : <<include>>
+UC2 ..> UC2_1 : <<include>>
+UC2 ..> UC2_2 : <<include>>
+UC2_1 -- server
+UC2_2 -- server
+UC2 -- perm
+UC2_1 -- clip
+UC2_2 -- clip
+
+' UC-003 relationships
+player --> UC3
+UC3 ..> UC1_1 : <<include>>
+UC3 ..> UC3_1 : <<include>>
+UC3 -- clip
+perm -- UC3
+
+@enduml
